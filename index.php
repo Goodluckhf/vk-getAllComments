@@ -7,6 +7,11 @@
     <body>
         <input style="width: 200px;" type='text' class='link-album' placeholder='Вставьте ссылку на альбом'>
         <button class='getComments'>Выгрузить</button>
+        <div class="comments-list">
+            <br>
+            <br>
+            
+        </div>
        
     </body>
 </html>
@@ -321,6 +326,13 @@
             $view.remove();
         });
     }
+    var delay = function(ms) {
+        var def = $.Deferred();
+        setTimeout(function() {
+            def.resolve();
+        }, ms);
+        return def.promise();
+    }
 
     $(function() {
         $('body').on('click', '.getComments', function() {
@@ -333,7 +345,32 @@
                 album_id: 196682859
             }).done(function() {
                 console.timeEnd('load');
-                console.log(CommentsProvider.get());
+                var comments = CommentsProvider.get();
+                console.log(comments);
+                var len = comments.length;
+                console.log(len);
+                var $container = $('.comments-list');
+                var def = $.Deferred();
+                def.resolve();
+                for(var i = 0; i < len; i++) {
+                    if(i % 50 === 0) {
+                        def = def.then(function() {
+                            return delay(30).then(function() {
+                                $container.append(comments[i].from_id + '<br>');
+                                return true;
+                            });
+                        });
+
+                    } else {
+                        def = def.then(function() {
+                            $container.append(comments[i].from_id + '<br>');
+                            return true;
+                        });
+                    }
+                    //$container.append(comments[i].from_id + '<br>');
+                }
+                //console.log(comments);
+
             }).fail(function(er) {
                 alert(JSON.stringify(er));
             });
