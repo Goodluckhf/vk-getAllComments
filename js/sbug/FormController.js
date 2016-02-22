@@ -35,7 +35,7 @@
     }
 
     var renderItem = function(comment) {
-        return comment.from_id + '<br>';
+        return '<a href="http://vk.com/id' + comment.from_id + '">' + comment.from_id + '</a><br>';
     }
 
     $('body').off('click', submitSelector);
