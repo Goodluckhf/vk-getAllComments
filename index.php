@@ -2,18 +2,18 @@
 <html>
     <head>
         <meta charset='UTF-8'>
-        <link rel="stylesheet" href="css/bootstrap.min.css">
-        <script src="/js/vendor/jquery.min.js"></script>
+        <link rel="stylesheet" href="./css/bootstrap.min.css">
+        <script src="./js/vendor/jquery.min.js"></script>
         
-        <script src="/js/sbug/sbug.js"></script>
-        <script src="/js/sbug/Event.js"></script>
-        <script src="/js/sbug/EventsContainer.js"></script>
-        <script src="/js/sbug/Cookie.js"></script>
-        <script src="/js/sbug/Request.js"></script>
-        <script src="/js/sbug/AuthService.js"></script>
-        <script src="/js/sbug/CommentsProvider.js"></script>
-        <script src="/js/sbug/Loader.js"></script>
-        <script src="/js/sbug/FormController.js"></script>
+        <script src="./js/sbug/sbug.js"></script>
+        <script src="./js/sbug/Event.js"></script>
+        <script src="./js/sbug/EventsContainer.js"></script>
+        <script src="./js/sbug/Cookie.js"></script>
+        <script src="./js/sbug/Request.js"></script>
+        <script src="./js/sbug/AuthService.js"></script>
+        <script src="./js/sbug/CommentsProvider.js"></script>
+        <script src="./js/sbug/Loader.js"></script>
+        <script src="./js/sbug/FormController.js"></script>
 
     </head>
     <body>
