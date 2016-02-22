@@ -157,15 +157,12 @@
         var self = this,
             user,
             isAuth = false,
-            cookieNameToken = 'vk-auth-token',
-            cookieNameExpire = 'vk-auth-expire',
-            cookieNameId = 'vk-auth-id';
+            cookieNameToken = 'vk-auth-token';
 
         
         var authorize = function(data) {
-            Cookie.set(cookieNameToken, data.token, {expires: data.expire});
-            Cookie.set(cookieNameExpire, data.expire, {expires: data.expire});
-            Cookie.set(cookieNameId, data.id, {expires: data.expire});
+            Cookie.set(cookieNameToken, data.token);
+
             Request.setExtra({
                 v: 5.45,
                 access_token: data.token
@@ -192,16 +189,12 @@
 
         this.auth = function() {
             var cookieToken = Cookie.get(cookieNameToken);
-            var cookieExpire = Cookie.get(cookieNameToken);
-            var cookieId = Cookie.get(cookieNameToken);
+            
             if(cookieToken) {
                 authorize({
-                    id: cookieId,
-                    expire: cookieExpire,
                     token: cookieToken
                 });
                 return true;
-
             }
             if(hasHash()) {
                 var newToken = getTokenFromUrl();
@@ -218,6 +211,7 @@
             comments = [],
             count = 100,
             hasNext = false,
+            allCount = null,
             events = new EventsContainer(),
             offset = 0;
 
@@ -232,15 +226,10 @@
             events.off(event);
         }
 
-        var checkHasNext = function(cnt) {
-            console.log(cnt);
-            console.log(count + offset);
-            if(cnt > count + offset) {
-                hasNext = true;
-            } else {
-                hasNext = false;
-            }
+        this.getCount = function() {
+            return allCount;
         }
+
         var add = function(data) {
             for(var i in data) {
                 if(data.hasOwnProperty(i)) {
@@ -257,9 +246,18 @@
                 album_id: data.album_id,
                 offset: offset,
                 count: count
-            }).done(function(cmts) {
-                events.trigger('load', {count: offset + cmts.response.items.length, all:cmts.response.count});
+            }).then(function(cmts) {
+                if(cmts.error) {
+                    var errDef = new $.Deferred();
+                    errDef.reject(cmts.error);
+                    return errDef.promise();
+                    //throw new Error(cmts);
+                }
                 add(cmts.response.items);
+                if(!allCount) {
+                    allCount = cmts.response.count;
+                }
+                events.trigger('load', {count: offset + cmts.response.items.length, all:cmts.response.count});
                 offset += 100;
                 return cmts;
             });
@@ -271,17 +269,17 @@
             var def = new $.Deferred();
             return self.vkApiGetComments(data).then(function(req) {
                 def.resolve(true);
+                
                 var reqCount = getRequestCount(req.response.count) - 1;
                 for(var i = 0; i < reqCount; ++i) {
                     def = def.then(function() {
                         var def1 = new $.Deferred();
                         setTimeout(function() {
-                            def1.then(function() {
-                                return self.vkApiGetComments(data);
-                            });
                             def1.resolve();
                         }, 500, data);
                         return def1.promise();
+                    }).then(function() {
+                        return self.vkApiGetComments(data);
                     });
                 }
                 def.done(function() {
@@ -312,7 +310,12 @@
             populate();
             $('body').append($view);
         }
-        
+
+        this.remove = function() {
+            $view.remove();
+            //delete  this;
+        }
+
         CommentsProvider.on('load', function(data) {
             console.log(data);
             //console.log(all);
@@ -343,40 +346,37 @@
             CommentsProvider.load({
                 owner_id: -20629724,
                 album_id: 196682859
-            }).done(function() {
+            }).then(function() {
                 console.timeEnd('load');
                 var comments = CommentsProvider.get();
-                console.log(comments);
-                var len = comments.length;
-                console.log(len);
+                var len = CommentsProvider.getCount();
                 var $container = $('.comments-list');
                 var def = $.Deferred();
                 def.resolve();
                 for(var i = 0; i < len; i++) {
                     if(i % 50 === 0) {
-                        def = def.then(function() {
-                            return delay(30).then(function() {
-                                $container.append(comments[i].from_id + '<br>');
+                        (function(i) {
+                            def = def.then(function() {
+                                return delay(30);
+                            }).then(function() {
+                                console.log(i);
+                                $container.append(comments[i].from_id + ' : ' + i +  '<br>');
                                 return true;
                             });
-                        });
-
+                        })(i);
                     } else {
-                        def = def.then(function() {
-                            $container.append(comments[i].from_id + '<br>');
-                            return true;
-                        });
+                        (function(i) {
+                            def = def.then(function() {
+                                $container.append(comments[i].from_id + ' : ' + i +  '<br>');
+                                return true;
+                            });
+                        })(i);
                     }
-                    //$container.append(comments[i].from_id + '<br>');
                 }
-                //console.log(comments);
-
             }).fail(function(er) {
-                alert(JSON.stringify(er));
+                console.log(er);
+                loader.remove();
             });
         });
-
-        
-        //Request.api('')
     });
 </script>
