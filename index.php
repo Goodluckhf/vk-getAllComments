@@ -18,7 +18,7 @@
     </head>
     <body>
         <div class="container">
-            <input class="form-control link-album" style="width: 400px; float:left;" type='text' placeholder='Вставьте ссылку на альбом'>
+            <input class="form-control link-album" style="width: 500px; float:left;" type='text' placeholder='Вставьте ссылку на альбом'>
             <button class='getComments btn btn-primary'>Выгрузить</button>
             <div class="comments-list">
                 <br>
