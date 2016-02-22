@@ -47,7 +47,7 @@
             window.location.href = '/';
             return true;
         }
-        window.location.href = 'https://oauth.vk.com/authorize?client_id=5180832&display=popup&redirect_uri=http://theme-id.dev&scope=photos&response_type=token&v=5.45';
+        window.location.href = 'https://oauth.vk.com/authorize?client_id=5180832&display=popup&redirect_uri=http://old.sb-ug.ru/comments&scope=photos&response_type=token&v=5.45';
     }
     self.auth();
 });
